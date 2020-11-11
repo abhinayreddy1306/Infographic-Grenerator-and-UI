@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" type="text/css" href="static/css/main.css">
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<head>
+    <meta charset="UTF-8">
+    <title>524 Infographic Generator</title>
+</head>
+<body>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="static/frontend.js"></script>
+    <script type="text/javascript" src="static/scatterplot.js"></script>
+    <div class="topnav">
+        <a class="active" href="/">Infographic Generator and UI</a>
+    </div>
+    <br>
+    <div class="wrapper">
+        <div class="wrapper1" id="leftwrapper">
+            <div id="uploadData">
+                <p> You can upload a dataset of type CSV.</p>
+                <input type=file name=file id="dataset">
+
+                <div id="demo"></div>
+
+                <input id="dataSubmit" type=submit value=Upload onclick="loadDoc()">
+            </div>
+            <div id="operType"></div>
+            <div id="chartType"></div>
+            <div id="columns"></div>
+        </div>
+        <div class="wrapper2" id="rightwrapper">
+        </div>
+    </div>
+</body>
+</html>
