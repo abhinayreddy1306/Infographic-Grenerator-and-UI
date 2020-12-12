@@ -1,4 +1,4 @@
-var constructScatter = function(data, container, first, second)   {
+var constructBar = function(data, container, first)   {
 
     // width, height, padding comes from plot position
     var points = [];
@@ -9,24 +9,18 @@ var constructScatter = function(data, container, first, second)   {
         points.push(coordinates);
     }
     data = points;
+    console.log(data);
 
     var getX = function(d) { return d.x;}
     var getY = function(d) { return d.y;}
 
     var xScale = d3.scale.linear().range([30, 190]);
-    // var xScale = d3.scaleLinear().range([0, width])
     var yScale = d3.scale.linear().range([170, 10]);
-    // var yScale = d3.scaleLinear().range([height, 0])
 
-    var xAxis = d3.svg.axis().scale(xScale).orient("bottom").outerTickSize(0)
-    var yAxis = d3.svg.axis().scale(yScale).orient("left").outerTickSize(0)
-    // var xAxis = d3.axisBottom(xScale)
-    // var yAxis = d3.axisLeft(yScale)
-
-    // var getClusterID = function(d) {return d.cluster_id;}
+    var xAxis = d3.svg.axis().scale(xScale).orient("bottom").outerTickSize(0);
+    var yAxis = d3.svg.axis().scale(yScale).orient("left").outerTickSize(0);
 
     var getColor = d3.scale.category10();
-    // var getColor = d3.scaleOrdinal(d3.schemeCategory10)
 
     var svg = d3.select(container)
         .append("svg")
@@ -40,12 +34,13 @@ var constructScatter = function(data, container, first, second)   {
         })
         .append("g")
 
-    var tooltip = d3.select(container)
+    var tooltip = d3.select("#dashboard")
         .append('div')
         .style('position','absolute');
 
-    xScale.domain([Math.min(d3.min(data, getX), 0), d3.max(data, getX)]).nice();
-    yScale.domain([Math.min(d3.min(data, getY), 0), d3.max(data, getY)]).nice();
+    xScale.domain([Math.min(d3.min(data, getX), 0) - 1, d3.max(data, getX) + 1]).nice();
+    yScale.domain([Math.min(d3.min(data, getY), 0) - 1, d3.max(data, getY) + 1]).nice();
+    console.log(170 - yScale(259));
 
     svg.append("g")
         .attr({
@@ -74,9 +69,8 @@ var constructScatter = function(data, container, first, second)   {
             "class": "label",
             "y": "5",
             "font-size": "5",
-            "transform":"rotate(-90)"
         })
-        .text(second) //y -axis label
+        .text("Count") //y -axis label
         .style("text-anchor", "end");
 
     var tooltip = d3.select(container).append("div")
@@ -85,14 +79,14 @@ var constructScatter = function(data, container, first, second)   {
 
     var tipMouseover = function(d) {
         var color = getColor(d.manufacturer);
-        var html  = "<span style='color:" + color + ";'>" + d.x + "," +d.y + "</span>";
+        var html  = "<span style='color:" + color + ";'>" + d.y + "</span>";
 
         tooltip.html(html)
             .style("left", (d3.event.pageX + 15) + "px")
             .style("top", (d3.event.pageY - 28) + "px")
             .transition()
             .duration(200)
-            .style("opacity", 1)
+            .style("opacity", .9)
 
     };
 
@@ -102,14 +96,15 @@ var constructScatter = function(data, container, first, second)   {
             .style("opacity", 0);
     };
 
-    svg.selectAll(".dot")
+    svg.selectAll(".bar")
         .data(data)
-        .enter().append("circle")
+        .enter().append("rect")
         .attr({
-            "class": "dot",
-            "cx": function(d) {return xScale(d.x)},
-            "cy": function(d) {return yScale(d.y)},
-            "r": "0.5%"
+            "class": "bar",
+            "x": function(d) {return xScale(d.x)},
+            "y": function(d) {return yScale(d.y)},
+            "width": 2,
+            "height": function(d) {return 170 - yScale(d.y)}
         })
         .style("fill", "#69b3a2")
         .on("mouseover", tipMouseover)

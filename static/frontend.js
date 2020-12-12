@@ -209,43 +209,60 @@ function plotChart() {
     var firstColumn = document.getElementById("firstColumn");
     var secondColumn = document.getElementById("secondColumn");
     var chartTypeName = chartType.options[chartType.selectedIndex].value;
+    var xhttp = new XMLHttpRequest();
+    var formData = new FormData();
     if (!doubleColumn.has(chartTypeName)) {
         var firstColumnName = firstColumn.options[firstColumn.selectedIndex].value;
+        formData.append('first', firstColumnName);
         console.log(firstColumnName);
     } else {
         var firstColumnName = firstColumn.options[firstColumn.selectedIndex].value;
         var secondColumnName = secondColumn.options[secondColumn.selectedIndex].value;
         console.log(firstColumnName);
         console.log(secondColumnName);
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var rightWrapper = document.getElementById("rightwrapper");
-                var svgContainer = document.createElement('div');
-                svgContainer.className = "svgwrapper";
-                var i = 0;
-                while (true) {
-                    if (!svgSet.has(i)) {
-                        break;
-                    }
-                    i++;
-                }
-                svgSet.add(i);
-                svgContainer.id = "svg" + i;
-                rightWrapper.appendChild(svgContainer);
-                $(function() {
-                    $("#" + svgContainer.id).draggable({
-                        // handle: 'rect'
-                    }).resizable()
-                });
-                constructScatter(JSON.parse(this.responseText), "#" + svgContainer.id, firstColumnName, secondColumnName);
-            }
-        };
-        var formData = new FormData();
         formData.append('first', firstColumnName);
         formData.append('second', secondColumnName);
-        xhttp.open("POST", chartTypeName + "Plot", true);
-        xhttp.send(formData);
     }
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var rightWrapper = document.getElementById("rightwrapper");
+            var svgContainer = document.createElement('div');
+            svgContainer.className = "svgwrapper";
+            var close = document.createElement("span");
+            close.id = "close";
+            close.innerText = "x";
+            close.onclick = function () {
+                svgSet.delete(this.parentNode.id);
+                this.parentNode.parentNode.removeChild(this.parentNode);
+            }
+            svgContainer.appendChild(close);
+            var i = 0;
+            while (true) {
+                if (!svgSet.has("svg" + i)) {
+                    break;
+                }
+                i++;
+            }
+            svgSet.add("svg" + i);
+            svgContainer.id = "svg" + i;
+            rightWrapper.appendChild(svgContainer);
+            $(function() {
+                $("#" + svgContainer.id).draggable({
+                    containment: "#rightwrapper"
+                }).resizable()
+            });
+            switch (chartTypeName) {
+                case "scatter" :
+                    constructScatter(JSON.parse(this.responseText), "#" + svgContainer.id, firstColumnName, secondColumnName);
+                    break;
+                case "bar" :
+                    constructBar(JSON.parse(this.responseText), "#" + svgContainer.id, firstColumnName);
+                    break;
+                default :
+                    break;
+            }
+        }
+    };
+    xhttp.open("POST", chartTypeName + "Plot", true);
+    xhttp.send(formData);
 }

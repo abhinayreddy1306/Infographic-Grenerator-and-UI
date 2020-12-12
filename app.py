@@ -34,6 +34,15 @@ def getScatterPlot():
     df_tmp.dropna()
     return df_tmp.to_json(orient='values')
 
+@app.route('/barPlot', methods=['POST'])
+def getBarPlot():
+    df_tmp = df[[request.form.get("first")]]
+    df_tmp.dropna()
+    df_tmp = pd.Series.to_frame(df_tmp[request.form.get("first")].value_counts());
+    df_tmp.reset_index(inplace=True)
+    print(df_tmp)
+    return df_tmp.to_json(orient='values')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
